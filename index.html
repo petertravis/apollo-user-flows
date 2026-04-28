@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events Workflow — Current vs Proposed</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #eef0f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      padding: 36px 28px 60px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a2e;
+      letter-spacing: -0.4px;
+      margin-bottom: 4px;
+    }
+    header p {
+      color: #888;
+      font-size: 13px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: #444;
+      background: white;
+      padding: 5px 12px;
+      border-radius: 999px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .legend-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .flows {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      flex: 1;
+      background: white;
+      border-radius: 18px;
+      padding: 24px 20px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      min-width: 0;
+    }
+
+    .panel-header {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 9px 18px;
+      border-radius: 10px;
+      margin-bottom: 22px;
+      letter-spacing: -0.2px;
+    }
+    .panel.current .panel-header {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1.5px solid #fecaca;
+    }
+    .panel.future .panel-header {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1.5px solid #bbf7d0;
+    }
+
+    .mermaid { width: 100%; }
+    .mermaid svg { max-width: 100% !important; height: auto !important; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Events Workflow: Current State vs. Proposed Asana</h1>
+    <p>Apollo Events — Airtable → Asana Migration</p>
+  </header>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#ffe0e0;border:1.5px solid #f87171"></div>
+      Pain point
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#dcfce7;border:1.5px solid #4ade80"></div>
+      Simplification
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#dbeafe;border:1.5px solid #60a5fa"></div>
+      UX change
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#ede9fe;border:1.5px solid #a78bfa"></div>
+      System / automated
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#fef9c3;border:1.5px solid #facc15"></div>
+      Unclear / concession
+    </div>
+  </div>
+
+  <div class="flows">
+
+    <!-- CURRENT STATE -->
+    <div class="panel current">
+      <div class="panel-header">◀ Current State — Airtable</div>
+      <div class="mermaid">
+flowchart TD
+  classDef pain fill:#ffe0e0,stroke:#f87171,color:#7f1d1d
+  classDef unclear fill:#fef9c3,stroke:#facc15,color:#713f12
+  classDef normal fill:#f8fafc,stroke:#cbd5e1,color:#1e293b
+  classDef terminal fill:#1e293b,stroke:#1e293b,color:#fff
+  classDef decision fill:#fff,stroke:#94a3b8,color:#1e293b
+
+  CS(["▶ Start"]):::terminal
+  C1["👤 Requester\nSubmits event request form"]:::normal
+  C2["⚠️ Requester selects budget code\nfrom ~13,000 AES codes"]:::pain
+  C3["🔁 System maps selected code\n→ downstream program code\n⚠️ Auto or manual unclear"]:::unclear
+  C4["⚠️ Event record created in Airtable\nPulls data across multiple bases\nvia custom interface screens"]:::pain
+  C5{"Submission\ncomplete?"}:::decision
+  C6["⚠️ Requester notified of gaps\nMechanism unclear from source"]:::unclear
+  C7["👥 Events Team reviews record\n⚠️ Handoff trigger unclear"]:::unclear
+  C8["👥 Events Team builds\nitemized event budget"]:::normal
+  C9{"Finance\napproval needed?"}:::decision
+  C10["💰 Finance Team reviews\nbudget & invoicing\n⚠️ Exact steps unclear"]:::unclear
+  C11["💰 Finance Team\nprocesses invoice"]:::normal
+  CE(["✓ Event complete"]):::terminal
+
+  CS --> C1 --> C2 --> C3 --> C4 --> C5
+  C5 -- "No" --> C6 --> C5
+  C5 -- "Yes" --> C7 --> C8 --> C9
+  C9 -- "Yes" --> C10 --> C11 --> CE
+  C9 -- "No / unclear" --> CE
+      </div>
+    </div>
+
+    <!-- FUTURE STATE -->
+    <div class="panel future">
+      <div class="panel-header">Future State — Asana ▶</div>
+      <div class="mermaid">
+flowchart TD
+  classDef simplify fill:#dcfce7,stroke:#4ade80,color:#14532d
+  classDef change fill:#dbeafe,stroke:#60a5fa,color:#1e3a8a
+  classDef sysnode fill:#ede9fe,stroke:#a78bfa,color:#4c1d95
+  classDef concession fill:#fef9c3,stroke:#facc15,color:#713f12
+  classDef unclear fill:#fef9c3,stroke:#facc15,color:#713f12
+  classDef normal fill:#f8fafc,stroke:#cbd5e1,color:#1e293b
+  classDef terminal fill:#1e293b,stroke:#1e293b,color:#fff
+  classDef decision fill:#fff,stroke:#94a3b8,color:#1e293b
+
+  FS(["▶ Start"]):::terminal
+  F1["✅ Requester submits simplified form\nPlain-language inputs only\nNo raw code selection required"]:::simplify
+  F2["⚙️ AI / Rules maps inputs\n→ correct budget code record\nCodes pre-synced from AES into Asana"]:::sysnode
+  F3{"Mapping\nclear?"}:::decision
+  F4["👥 Events Team confirms\nor corrects code mapping\n⚠️ Ambiguity threshold unclear"]:::unclear
+  F5["⚙️ System creates Asana task\nwith structured custom fields"]:::sysnode
+  F6["✅ Events Team reviews in\nAsana project / table view\nReplaces Airtable custom UI"]:::change
+  F7["👥 Events Team adds\nitemized budget via custom fields"]:::normal
+  F8{"Post-submission\nupdate needed?"}:::decision
+  F9["⚠️ Requester / Events Team\nuses comments + task updates\nNo formal re-submit loop (concession)"]:::concession
+  F10["⚙️ Asana rule triggers\nfinance approval workflow"]:::sysnode
+  F11["✅ Finance Team reviews in\ndedicated Asana finance view\nReplaces Airtable finance UI"]:::change
+  F12{"Finance\napproved?"}:::decision
+  F13["⚙️ Rejection routed back\nvia task / comment"]:::sysnode
+  F14["💰 Finance processes invoice\n⚠️ External system unclear"]:::unclear
+  FE(["✓ Event complete"]):::terminal
+
+  FS --> F1 --> F2 --> F3
+  F3 -- "Ambiguous" --> F4 --> F5
+  F3 -- "Clear" --> F5
+  F5 --> F6 --> F7 --> F8
+  F8 -- "Yes" --> F9 --> F6
+  F8 -- "No" --> F10 --> F11 --> F12
+  F12 -- "No" --> F13 --> F6
+  F12 -- "Yes" --> F14 --> FE
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif",
+        fontSize: '13px',
+        primaryColor: '#f8fafc',
+        primaryBorderColor: '#cbd5e1',
+        primaryTextColor: '#1e293b',
+        lineColor: '#94a3b8',
+        edgeLabelBackground: '#f8fafc',
+        nodeBorder: '#cbd5e1',
+        clusterBkg: '#f8fafc',
+        titleColor: '#1e293b',
+      },
+      flowchart: {
+        curve: 'basis',
+        padding: 16,
+        nodeSpacing: 40,
+        rankSpacing: 52,
+        htmlLabels: true,
+      }
+    });
+  </script>
+</body>
+</html>
