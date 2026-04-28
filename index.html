@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Events Workflow — Current vs Proposed</title>
+  <title>Apollo User Flows — Events Workflow</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,11 +18,11 @@
       margin-bottom: 28px;
     }
     header h1 {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
       color: #1a1a2e;
       letter-spacing: -0.4px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     header p {
       color: #888;
@@ -31,7 +31,7 @@
 
     .legend {
       display: flex;
-      gap: 20px;
+      gap: 14px;
       flex-wrap: wrap;
       justify-content: center;
       margin-bottom: 28px;
@@ -58,8 +58,8 @@
       display: flex;
       gap: 20px;
       align-items: flex-start;
-      max-width: 1500px;
-      margin: 0 auto;
+      max-width: 1600px;
+      margin: 0 auto 32px;
     }
 
     .panel {
@@ -93,13 +93,42 @@
 
     .mermaid { width: 100%; }
     .mermaid svg { max-width: 100% !important; height: auto !important; }
+
+    .caveat {
+      max-width: 1600px;
+      margin: 0 auto;
+      background: #fffbeb;
+      border: 1.5px solid #fcd34d;
+      border-radius: 14px;
+      padding: 18px 24px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .caveat-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .caveat-body h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 4px;
+      letter-spacing: -0.1px;
+    }
+    .caveat-body p {
+      font-size: 13px;
+      color: #78350f;
+      line-height: 1.55;
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Events Workflow: Current State vs. Proposed Asana</h1>
-    <p>Apollo Events — Airtable → Asana Migration</p>
+    <h1>Apollo User Flows — Events Workflow</h1>
+    <p>Current State (Airtable) vs. Proposed Future State (Asana)</p>
   </header>
 
   <div class="legend">
@@ -169,39 +198,54 @@ flowchart TD
   classDef change fill:#dbeafe,stroke:#60a5fa,color:#1e3a8a
   classDef sysnode fill:#ede9fe,stroke:#a78bfa,color:#4c1d95
   classDef concession fill:#fef9c3,stroke:#facc15,color:#713f12
-  classDef unclear fill:#fef9c3,stroke:#facc15,color:#713f12
   classDef normal fill:#f8fafc,stroke:#cbd5e1,color:#1e293b
   classDef terminal fill:#1e293b,stroke:#1e293b,color:#fff
   classDef decision fill:#fff,stroke:#94a3b8,color:#1e293b
 
   FS(["▶ Start"]):::terminal
-  F1["✅ Requester submits simplified form\nPlain-language inputs only\nNo raw code selection required"]:::simplify
-  F2["⚙️ AI / Rules maps inputs\n→ correct budget code record\nCodes pre-synced from AES into Asana"]:::sysnode
-  F3{"Mapping\nclear?"}:::decision
-  F4["👥 Events Team confirms\nor corrects code mapping\n⚠️ Ambiguity threshold unclear"]:::unclear
-  F5["⚙️ System creates Asana task\nwith structured custom fields"]:::sysnode
-  F6["✅ Events Team reviews in\nAsana project / table view\nReplaces Airtable custom UI"]:::change
-  F7["👥 Events Team adds\nitemized budget via custom fields"]:::normal
-  F8{"Post-submission\nupdate needed?"}:::decision
-  F9["⚠️ Requester / Events Team\nuses comments + task updates\nNo formal re-submit loop (concession)"]:::concession
-  F10["⚙️ Asana rule triggers\nfinance approval workflow"]:::sysnode
-  F11["✅ Finance Team reviews in\ndedicated Asana finance view\nReplaces Airtable finance UI"]:::change
-  F12{"Finance\napproved?"}:::decision
-  F13["⚙️ Rejection routed back\nvia task / comment"]:::sysnode
-  F14["💰 Finance processes invoice\n⚠️ External system unclear"]:::unclear
+
+  F1["✅ Requester submits Asana form\nPublic or internal form\nBasic event details — no budget codes"]:::simplify
+
+  F2["⚙️ Form creates task in\nEvent Planning Project\nEvent details live alongside\nteam execution workflow"]:::sysnode
+
+  F3["⚙️ AI Studio rule reads request\nMaps task to correct budget code record\nvia reference custom field\nCodes loaded from CSV / API into Asana tables"]:::sysnode
+
+  F4["⚙️ Budget project created\nfrom template for this event\nEach task = one budget line item / category"]:::sysnode
+
+  F5["📊 Line items reference table records\nCategories and inputs live in tables\nCost per unit pulled via lookups / AI logic"]:::change
+
+  F6["👤 Planner selects needed categories\nSets quantities per line item\nTracks estimated vs actual cost\nFormulas roll up totals and variance"]:::normal
+
+  F7{"Budget\nready for review?"}:::decision
+  F6b["👤 Planner revises\nline items"]:::normal
+
+  F8["✅ Budget project routed\nto approver in Asana\nTeam reviews total planned spend\nbefore execution begins"]:::change
+
+  F9{"Approved?"}:::decision
+  F9b["⚙️ Rejection returned\nto planner via task / comment"]:::sysnode
+
+  F10["🏃 Execution phase\nEvent Planning Project: operational tasks\nBudget Project: financial line items\nActuals tracked as spend comes in"]:::change
+
+  F11["📊 Post-event reconciliation\nBudget vs actuals compared\nEvent value evaluated vs outcomes\n(leads generated, fundraising, etc.)"]:::change
+
   FE(["✓ Event complete"]):::terminal
 
-  FS --> F1 --> F2 --> F3
-  F3 -- "Ambiguous" --> F4 --> F5
-  F3 -- "Clear" --> F5
-  F5 --> F6 --> F7 --> F8
-  F8 -- "Yes" --> F9 --> F6
-  F8 -- "No" --> F10 --> F11 --> F12
-  F12 -- "No" --> F13 --> F6
-  F12 -- "Yes" --> F14 --> FE
+  FS --> F1 --> F2 --> F3 --> F4 --> F5 --> F6 --> F7
+  F7 -- "Needs revision" --> F6b --> F6
+  F7 -- "Ready" --> F8 --> F9
+  F9 -- "No" --> F9b --> F6
+  F9 -- "Yes" --> F10 --> F11 --> FE
       </div>
     </div>
 
+  </div>
+
+  <div class="caveat">
+    <div class="caveat-icon">⚠️</div>
+    <div class="caveat-body">
+      <h3>Important caveat</h3>
+      <p>This flow is workable in Asana, but requires simplification versus Airtable's current setup. Custom web-app-like Airtable interfaces — screens that stitch data across multiple bases with bespoke UI — are not something Asana is committing to replicate. The proposed flow uses Asana-native primitives: projects, tasks, custom fields, rules, and table records.</p>
+    </div>
   </div>
 
   <script>
